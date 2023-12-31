@@ -7,7 +7,7 @@ const port = 3000
 
 app.use(express.json())
 app.use('/users', usersRouter)
-databaseService.connect().catch(console.dir)
+databaseService.connect()
 
 app.listen(port, () => {
   console.log(`App is listening on port ${port}`)
