@@ -7,7 +7,8 @@ import {
   resendVerifyEmailController,
   forgotPasswordController,
   verifyForgotPasswordController,
-  resetPasswordController
+  resetPasswordController,
+  getMeController
 } from '~/controllers/users.controllers'
 import {
   accessTokenValidator,
@@ -24,7 +25,7 @@ import { wrapRequestHandler } from '~/utils/handlers'
 const usersRouter = Router()
 
 /**
- * Description Login a user
+ * Description: Login a user
  * Path: /login
  * Method: POST
  * Body: { email: string, password: string }
@@ -32,7 +33,7 @@ const usersRouter = Router()
 usersRouter.post('/login', loginValidator, loginController)
 
 /**
- * Description Register a new user
+ * Description: Register a new user
  * Path: /register
  * Method: POST
  * Body: { name: string, email: string, password: string, confirm_password: string, date_of_birth: ISO8601 }
@@ -40,7 +41,7 @@ usersRouter.post('/login', loginValidator, loginController)
 usersRouter.post('/register', registerValidator, wrapRequestHandler(registerController))
 
 /**
- * Description Logout a user
+ * Description: Logout a user
  * Path: /logout
  * Method: POST
  * Header: { Authorization: Bearer <access_token> }
@@ -92,5 +93,13 @@ usersRouter.post(
  * Body: { forgot_password_token: string, password: string, confirm_password: string }
  */
 usersRouter.post('/reset-password', resetPasswordValidator, wrapRequestHandler(resetPasswordController))
+
+/**
+ * Description: Get my profile
+ * Path: /me
+ * Method: GET
+ * Header: { Authorization: Bearer <access_token> }
+ */
+usersRouter.get('/me', accessTokenValidator, wrapRequestHandler(getMeController))
 
 export default usersRouter
