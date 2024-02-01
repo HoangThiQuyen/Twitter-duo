@@ -36,7 +36,7 @@ import { UpdateMeReqBody } from '~/models/requests/User.requests'
 import { wrapRequestHandler } from '~/utils/handlers'
 
 const usersRouter = Router()
-
+// Dùng wrap để bắt được những lỗi mà throw ra của try catch
 /**
  * Description: Login a user
  * Path: /login
