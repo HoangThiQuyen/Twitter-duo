@@ -1,12 +1,13 @@
 import { Request } from 'express'
+import { File } from 'formidable'
 import fs from 'fs'
 import path from 'path'
+import { UPLOAD_TEMP_DIR } from '~/constants/dir'
 
 export const initFolder = () => {
-  const uploadFolderPath = path.resolve('uploads')
-  if (!fs.existsSync(uploadFolderPath)) {
+  if (!fs.existsSync(UPLOAD_TEMP_DIR)) {
     // create new folder
-    fs.mkdirSync(uploadFolderPath, {
+    fs.mkdirSync(UPLOAD_TEMP_DIR, {
       recursive: true // create nested folder
     })
   }
@@ -16,7 +17,7 @@ export const handleUploadSingleImage = async (req: Request) => {
   // fix ES-module được dùng trong 1 common JS( do thư viện update version)
   const formidable = (await import('formidable')).default
   const form = formidable({
-    uploadDir: path.resolve('uploads'),
+    uploadDir: UPLOAD_TEMP_DIR,
     maxFiles: 1,
     // lấy cả đuôi file
     keepExtensions: true,
@@ -29,7 +30,7 @@ export const handleUploadSingleImage = async (req: Request) => {
       return valid
     }
   })
-  return new Promise((resolve, reject) => {
+  return new Promise<File>((resolve, reject) => {
     form.parse(req, (err, fields, files) => {
       if (err) {
         return reject(err)
@@ -38,7 +39,13 @@ export const handleUploadSingleImage = async (req: Request) => {
       if (!Boolean(files.image)) {
         return reject(new Error('File is empty'))
       }
-      resolve(files)
+      resolve((files.image as File[])[0])
     })
   })
+}
+
+export const getNameFromFullName = (fullname: string) => {
+  const namearr = fullname.split('.')
+  namearr.pop()
+  return namearr.join('')
 }
