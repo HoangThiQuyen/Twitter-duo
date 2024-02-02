@@ -5,7 +5,7 @@ import { defaultErrorHandler } from './middlewares/error.middlewares'
 import mediaRouter from './routes/medias.routes'
 import { initFolder } from './utils/file'
 import { config } from 'dotenv'
-import { UPLOAD_IMAGE_DIR } from './constants/dir'
+import { UPLOAD_VIDEO_DIR } from './constants/dir'
 import staticRouter from './routes/static.routes'
 
 config()
@@ -26,6 +26,8 @@ app.use('/medias', mediaRouter)
 // app.use('/static', express.static(UPLOAD_IMAGE_DIR))
 // C2: có thể custom( thêm middle để bắt lỗi) và cấu hình thêm
 app.use('/static', staticRouter)
+// Do static thường chỉ xử lý hiển thị được với image nên phải dùng streaming video của express để static video
+app.use('/static/video', express.static(UPLOAD_VIDEO_DIR))
 
 app.use(defaultErrorHandler)
 
