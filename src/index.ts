@@ -5,7 +5,7 @@ import { defaultErrorHandler } from './middlewares/error.middlewares'
 import mediaRouter from './routes/medias.routes'
 import { initFolder } from './utils/file'
 import { config } from 'dotenv'
-import { UPLOAD_DIR } from './constants/dir'
+import { UPLOAD_IMAGE_DIR } from './constants/dir'
 import staticRouter from './routes/static.routes'
 
 config()
@@ -23,7 +23,7 @@ app.use('/medias', mediaRouter)
 
 //lấy đường dẫn tuyệt đối để hiển thị đường url image
 // C1:
-// app.use('/static', express.static(UPLOAD_DIR))
+// app.use('/static', express.static(UPLOAD_IMAGE_DIR))
 // C2: có thể custom( thêm middle để bắt lỗi) và cấu hình thêm
 app.use('/static', staticRouter)
 
