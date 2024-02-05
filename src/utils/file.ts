@@ -16,6 +16,7 @@ export const initFolder = () => {
 
 export const handleUploadImage = async (req: Request) => {
   // fix ES-module được dùng trong 1 common JS( do thư viện update version)
+  // Dùng formidable để thực hiện upload ảnh lên server
   const formidable = (await import('formidable')).default
   const form = formidable({
     uploadDir: UPLOAD_IMAGE_TEMP_DIR,
