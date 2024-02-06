@@ -8,6 +8,7 @@ import { config } from 'dotenv'
 import { UPLOAD_VIDEO_DIR } from './constants/dir'
 import staticRouter from './routes/static.routes'
 import cors from 'cors'
+import tweetsRouter from './routes/tweets.routes'
 
 config()
 
@@ -34,6 +35,7 @@ app.use('/medias', mediaRouter)
 app.use('/static', staticRouter)
 // Do static thường chỉ xử lý hiển thị được với image nên phải dùng streaming video của express để static video
 app.use('/static/video', express.static(UPLOAD_VIDEO_DIR))
+app.use('/tweets', tweetsRouter)
 
 app.use(defaultErrorHandler)
 
