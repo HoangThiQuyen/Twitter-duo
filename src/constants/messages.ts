@@ -64,3 +64,16 @@ export const USERS_MESSAGES = {
   UPLOAD_SUCCESS: 'Upload success',
   REFRESH_TOKEN_SUCCESS: 'Refresh token success'
 } as const
+
+export const TWEETS_MESSAGES = {
+  INVALID_TYPE: 'Invalid type',
+  INVALID_AUDIENCE: 'Invalid audience',
+  PARENT_ID_MUST_BE_A_VALID_TWEET_ID: 'Parent_is must be a valid tweet_id',
+  PARENT_ID_MUST_BE_NULL: 'Parent_id must be null',
+  CONTENT_MUST_BE_A_NON_EMPTY_STRING: 'Content must be a non empty string',
+  CONTENT_MUST_BE_EMPTY_STRING: 'Content must be empty string',
+  HASHTAGS_MUST_BE_AN_ARRAY_OF_STRING: 'Hashtags must be an array of string',
+  MENTIONS_MUST_BE_AN_ARRAY_OF_USER_ID: 'Mentions must be an array of user_id',
+  MEDIAS_MUST_BE_AN_ARRAY_OF_MEDIA_OBJECT: 'Medias must be an array of media object',
+  CREATE_TWEET_SUCCESS: 'Create tweet success'
+} as const
