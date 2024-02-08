@@ -1,9 +1,10 @@
 import { Request, Response } from 'express'
 import { ParamsDictionary } from 'express-serve-static-core'
-import { TokenPayload, UnlikeTweetParams } from '~/models/requests/User.requests'
+import { TokenPayload } from '~/models/requests/User.requests'
 import { LIKES_MESSAGES } from '~/constants/messages'
 import { LikeTweetReqBody } from '~/models/requests/Like.requests'
 import likeService from '~/services/likes.services'
+import { UnlikeTweetParams } from '~/models/requests/Tweet.requests'
 
 export const likeTweetController = async (req: Request<ParamsDictionary, any, LikeTweetReqBody>, res: Response) => {
   const { user_id } = req.decoded_authorization as TokenPayload

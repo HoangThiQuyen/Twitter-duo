@@ -77,11 +77,3 @@ export interface TokenPayload extends JwtPayload {
   iat: number
   exp: number
 }
-
-export interface UnbookmarkTweetParams extends ParamsDictionary {
-  tweet_id: string
-}
-
-export interface UnlikeTweetParams extends ParamsDictionary {
-  tweet_id: string
-}
