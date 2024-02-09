@@ -134,9 +134,122 @@ export const tweetIdValidator = validate(
                 status: HTTP_STATUS.BAD_REQUEST
               })
             }
-            const tweet = await databaseService.tweets.findOne({
-              _id: new ObjectId(value)
-            })
+            const [tweet] = await databaseService.tweets
+              .aggregate<Tweet>([
+                {
+                  $match: {
+                    _id: new ObjectId(value)
+                  }
+                },
+                {
+                  $lookup: {
+                    from: 'hashtags',
+                    localField: 'hashtags',
+                    foreignField: '_id',
+                    as: 'hashtags'
+                  }
+                },
+                {
+                  $lookup: {
+                    from: 'users',
+                    localField: 'mentions',
+                    foreignField: '_id',
+                    as: 'mentions'
+                  }
+                },
+                {
+                  $addFields: {
+                    mentions: {
+                      $map: {
+                        input: '$mentions',
+                        as: 'mention',
+                        in: {
+                          _id: '$$mention._id',
+                          username: '$$mention.username',
+                          name: '$$mention.name',
+                          email: '$$mention.email'
+                        }
+                      }
+                    }
+                  }
+                },
+                {
+                  $lookup: {
+                    from: 'bookmarks',
+                    localField: '_id',
+                    foreignField: 'tweet_id',
+                    as: 'bookmarks'
+                  }
+                },
+                {
+                  $lookup: {
+                    from: 'likes',
+                    localField: '_id',
+                    foreignField: 'tweet_id',
+                    as: 'likes'
+                  }
+                },
+                {
+                  $lookup: {
+                    from: 'tweets',
+                    localField: '_id',
+                    foreignField: 'parent_id',
+                    as: 'tweet_childs'
+                  }
+                },
+                {
+                  $addFields: {
+                    bookmarks: {
+                      $size: '$bookmarks'
+                    },
+                    likes: {
+                      $size: '$likes'
+                    },
+                    retweet_count: {
+                      $size: {
+                        $filter: {
+                          input: '$tweet_childs',
+                          as: 'child',
+                          cond: {
+                            $eq: ['$$child.type', TweetType.Retweet]
+                          }
+                        }
+                      }
+                    },
+                    comment_count: {
+                      $size: {
+                        $filter: {
+                          input: '$tweet_childs',
+                          as: 'child',
+                          cond: {
+                            $eq: ['$$child.type', TweetType.Comment]
+                          }
+                        }
+                      }
+                    },
+                    quote_count: {
+                      $size: {
+                        $filter: {
+                          input: '$tweet_childs',
+                          as: 'child',
+                          cond: {
+                            $eq: ['$$child.type', TweetType.QuoteTweet]
+                          }
+                        }
+                      }
+                    },
+                    views: {
+                      $add: ['$user_views', '$guest_views']
+                    }
+                  }
+                },
+                {
+                  $project: {
+                    tweet_childs: 0
+                  }
+                }
+              ])
+              .toArray()
             if (!tweet) {
               throw new ErrorWithStatus({
                 message: TWEETS_MESSAGES.TWEET_NOT_FOUND,
