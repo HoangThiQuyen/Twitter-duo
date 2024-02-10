@@ -214,7 +214,7 @@ class UsersService {
         name: userInfo.name,
         date_of_birth: new Date().toISOString(),
         password,
-        comfirm_password: password
+        confirm_password: password
       })
       return { ...data, newUser: 1, verify: UserVerifyStatus.Unverified }
     }

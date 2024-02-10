@@ -15,7 +15,7 @@ export interface RegisterRequestBody {
   name: string
   email: string
   password: string
-  comfirm_password: string
+  confirm_password: string
   date_of_birth: string
 }
 
@@ -37,7 +37,7 @@ export interface VerifyForgotPasswordReqBody {
 
 export interface ResetPasswordReqBody {
   password: string
-  comfirm_password: string
+  confirm_password: string
   forgot_password_token: string
 }
 
