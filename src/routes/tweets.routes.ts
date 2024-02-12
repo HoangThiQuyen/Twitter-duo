@@ -68,7 +68,7 @@ tweetsRouter.get(
  * Description: Get new feeds
  * Path: /
  * Method: GET
- * Header: { Authorization?: Bearer <access_token> }
+ * Header: { Authorization: Bearer <access_token> }
  * Query:{ limit: number, page: number}
  */
 tweetsRouter.get(

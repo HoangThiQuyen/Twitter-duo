@@ -95,3 +95,7 @@ export const LIKES_MESSAGES = {
   LIKE_TWEET_SUCCESS: 'Like tweet success',
   UNLIKE_TWEET_SUCCESS: 'Unlike tweet success'
 } as const
+
+export const SEARCH_MESSAGES = {
+  SEARCH_SUCCESS: 'Search success'
+}
