@@ -3,11 +3,12 @@ import { getNameFromFullName, handleUploadImage, handleUploadVideo } from '~/uti
 import sharp from 'sharp'
 import { UPLOAD_IMAGE_DIR } from '~/constants/dir'
 import path from 'path'
-import fs from 'fs'
 import { isProduction } from '~/constants/config'
 import { config } from 'dotenv'
 import { MediaType } from '~/constants/enums'
 import { Media } from '~/models/Other'
+import { uploadFileToS3 } from '~/utils/s3'
+import fsPromise from 'fs/promises'
 
 config()
 
@@ -16,18 +17,31 @@ class MediasService {
     const files = await handleUploadImage(req)
     const result: Media[] = await Promise.all(
       files.map(async (file) => {
+        const mime = (await import('mime')).default
         // change image from png,... to jpeg
         const newName = getNameFromFullName(file.newFilename)
-        const newPath = path.resolve(UPLOAD_IMAGE_DIR, `${newName}.jpg`)
+        const newFullFileName = `${newName}.jpg`
+        const newPath = path.resolve(UPLOAD_IMAGE_DIR, newFullFileName)
+        // convert default file to smaller file
         await sharp(file.filepath).jpeg().toFile(newPath)
+        const s3Result = await uploadFileToS3({
+          filename: newFullFileName,
+          filepath: newPath,
+          contentType: mime.getType(newPath) as string
+        })
         // remove image after upload image
-        fs.unlinkSync(file.filepath)
+        await Promise.all([fsPromise.unlink(file.filepath), fsPromise.unlink(newPath)])
+        // fs.unlinkSync(file.filepath)
         return {
-          url: isProduction
-            ? `${process.env.HOST}/static/image/${newName}.jpg`
-            : `http://localhost:${process.env.PORT}/static/image/${newName}.jpg`,
+          url: s3Result.Location as string,
           type: MediaType.Image
         }
+        // return {
+        //   url: isProduction
+        //     ? `${process.env.HOST}/static/image/${newFullFileName}`
+        //     : `http://localhost:${process.env.PORT}/static/image/${newFullFileName}`,
+        //   type: MediaType.Image
+        // }
       })
     )
     return result
