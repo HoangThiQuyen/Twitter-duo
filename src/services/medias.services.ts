@@ -3,7 +3,7 @@ import { getNameFromFullName, handleUploadImage, handleUploadVideo } from '~/uti
 import sharp from 'sharp'
 import { UPLOAD_IMAGE_DIR } from '~/constants/dir'
 import path from 'path'
-import { isProduction } from '~/constants/config'
+// import { isProduction } from '~/constants/config'
 import { config } from 'dotenv'
 import { MediaType } from '~/constants/enums'
 import { Media } from '~/models/Other'
@@ -14,10 +14,10 @@ config()
 
 class MediasService {
   async uploadImage(req: Request) {
+    const mime = (await import('mime')).default
     const files = await handleUploadImage(req)
     const result: Media[] = await Promise.all(
       files.map(async (file) => {
-        const mime = (await import('mime')).default
         // change image from png,... to jpeg
         const newName = getNameFromFullName(file.newFilename)
         const newFullFileName = `${newName}.jpg`
@@ -25,7 +25,7 @@ class MediasService {
         // convert default file to smaller file
         await sharp(file.filepath).jpeg().toFile(newPath)
         const s3Result = await uploadFileToS3({
-          filename: newFullFileName,
+          filename: 'images/' + newFullFileName,
           filepath: newPath,
           contentType: mime.getType(newPath) as string
         })
@@ -48,15 +48,28 @@ class MediasService {
   }
 
   async uploadVideo(req: Request) {
+    const mime = (await import('mime')).default
     const files = await handleUploadVideo(req)
-    const result: Media[] = files.map((file) => {
-      return {
-        url: isProduction
-          ? `${process.env.HOST}/static/video/${file.newFilename}`
-          : `http://localhost:${process.env.PORT}/static/video/${file.newFilename}`,
-        type: MediaType.Video
-      }
-    })
+    const result: Media[] = await Promise.all(
+      files.map(async (file) => {
+        const s3Result = await uploadFileToS3({
+          filename: 'videos/' + file.newFilename,
+          contentType: mime.getType(file.filepath) as string,
+          filepath: file.filepath
+        })
+        fsPromise.unlink(file.filepath)
+        return {
+          url: s3Result.Location as string,
+          type: MediaType.Video
+        }
+        // return {
+        //   url: isProduction
+        //     ? `${process.env.HOST}/static/video/${file.newFilename}`
+        //     : `http://localhost:${process.env.PORT}/static/video/${file.newFilename}`,
+        //   type: MediaType.Video
+        // }
+      })
+    )
     return result
   }
 }
