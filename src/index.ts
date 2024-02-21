@@ -16,6 +16,8 @@ import './utils/s3'
 import { createServer } from 'http'
 import { Server } from 'socket.io'
 import Conversation from './models/schemas/Conversation.schema'
+import conversationsRouter from './routes/conversations.routes'
+import { ObjectId } from 'mongodb'
 // import './utils/fake'
 
 config()
@@ -50,6 +52,7 @@ app.use('/tweets', tweetsRouter)
 app.use('/bookmarks', bookmarksRouter)
 app.use('/likes', likeRoutes)
 app.use('/search', searchRouter)
+app.use('/conversations', conversationsRouter)
 
 app.use(defaultErrorHandler)
 
@@ -77,8 +80,8 @@ io.on('connection', (socket) => {
     }
     await databaseService.conversations.insertOne(
       new Conversation({
-        sender_id: arg.from,
-        receiver_id: arg.to,
+        sender_id: new ObjectId(arg.from),
+        receiver_id: new ObjectId(arg.to),
         content: arg.content
       })
     )
