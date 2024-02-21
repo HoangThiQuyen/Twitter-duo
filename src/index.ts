@@ -70,7 +70,10 @@ io.on('connection', (socket) => {
   }
   console.log(users)
   socket.on('private message', (arg) => {
-    const receiver_socket_id = users[arg.to].socket_id
+    const receiver_socket_id = users[arg.to]?.socket_id
+    if (!receiver_socket_id) {
+      return
+    }
     socket.to(receiver_socket_id).emit('receive private message', {
       content: arg.content,
       from: user_id
