@@ -16,7 +16,40 @@ import './utils/s3'
 import conversationsRouter from './routes/conversations.routes'
 import { createServer } from 'http'
 import initSocket from './utils/socket'
+import swaggerUi from 'swagger-ui-express'
+import swaggerJsdoc from 'swagger-jsdoc'
 // import './utils/fake'
+
+// c1: write swagger with comment in js file
+// const options: swaggerJsdoc.Options = {
+//   definition: {
+//     openapi: '3.0.0',
+//     info: {
+//       title: 'Swagger Twitter Clone',
+//       version: '1.0.0'
+//     },
+//     components: {
+//       securitySchemes: {
+//         BearerAuth: { type: 'http', scheme: 'bearer', bearerFormat: 'JWT' }
+//       }
+//     }
+//   },
+//   apis: ['./src/routes/*.routes.ts', './src/models/schemas/*.schema.ts']
+// }
+
+// c2: write swagger with comment in yaml files
+const options: swaggerJsdoc.Options = {
+  definition: {
+    openapi: '3.0.0',
+    info: {
+      title: 'Swagger Twitter Clone',
+      version: '1.0.0'
+    }
+  },
+  apis: ['./swagger/*.yaml']
+}
+
+const openapiSpecification = swaggerJsdoc(options)
 
 config()
 
@@ -32,8 +65,11 @@ const app = express()
 const httpServer = createServer(app)
 initSocket(httpServer)
 
-const port = process.env.PORT || 4000
 app.use(cors())
+const port = process.env.PORT || 4000
+
+// create swagger for project
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(openapiSpecification))
 
 //create uploads folder
 initFolder()

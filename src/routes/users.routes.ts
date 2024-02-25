@@ -38,12 +38,47 @@ import { wrapRequestHandler } from '~/utils/handlers'
 
 const usersRouter = Router()
 // Dùng wrap để bắt được những lỗi mà throw ra cua async
+
 /**
- * Description: Login a user
- * Path: /login
- * Method: POST
- * Body: { email: string, password: string }
+ * @swagger
+ * tags:
+ *   name: users
+ *   description: Api about users
+ * /users/login:
+ *   post:
+ *     summary: Login
+ *     description: Api login
+ *     tags:
+ *       - users
+ *     operationId: login
+ *     requestBody:
+ *       description: Login info
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/LoginBody'
+ *     responses:
+ *       '200':
+ *         description: Login successful
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Login success
+ *                 result:
+ *                   $ref: '#/components/schemas/SuccessAuthentication'
+ *       '422':
+ *         description: Invalid input
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/InvalidInput'
  */
+
 usersRouter.post('/login', loginValidator, wrapRequestHandler(loginController))
 
 /**

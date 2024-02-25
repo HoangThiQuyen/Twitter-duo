@@ -1,0 +1,78 @@
+openapi: 3.0.3
+info:
+  title: Swagger Twitter Clone
+  description: Twitter Clone project
+  contact:
+    email: hoangquyen8599@gmail.com
+  version: 1.0.11
+servers:
+  - url: http://localhost:4000
+tags:
+  - name: users
+    description: Api about users
+paths:
+  /users/login:
+    post:
+      tags:
+        - users
+      summary: Login
+      description: Api login
+      operationId: login
+      requestBody:
+        description: Login info
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginBody'
+        required: true
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Login success
+                  result:
+                    $ref: '#/components/schemas/SuccessAuthentication'
+        '422':
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InvalidInput'
+  /users/me:
+    get:
+      tags:
+        - users
+      summary: Get me
+      description: Api Get my profile
+      operationId: getMe
+      security:
+        - BearerAuth: []
+      responses:
+        default:
+          description: Get my profile success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Get my profile success
+                  result:
+                    $ref: '#/components/schemas/UserInfo'
+components:
+  schemas:
+    UserInfo:
+      $ref: 'components.yaml#/components/schemas/UserInfo'
+    InvalidInput:
+      $ref: 'components.yaml#/components/schemas/InvalidInput'
+    LoginBody:
+      $ref: 'components.yaml#/components/schemas/LoginBody'
+    SuccessAuthentication:
+      $ref: 'components.yaml#/components/schemas/SuccessAuthentication'

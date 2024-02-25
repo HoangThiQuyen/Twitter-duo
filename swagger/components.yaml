@@ -1,0 +1,105 @@
+components:
+  schemas:
+    LoginBody:
+      type: object
+      properties:
+        email:
+          type: string
+          example: quyen6@gmail.com
+        password:
+          type: string
+          example: Quyen123!
+    SuccessAuthentication:
+      type: object
+      properties:
+        access_token:
+          type: string
+          example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNjVjNGQzNzVmNmRmODA1Mjg0MzFhMzY5IiwidG9rZW5fdHlwZSI6MCwidmVyaWZ5IjoxLCJpYXQiOjE3MDg4Mzg2MTIsImV4cCI6MTcwODg0OTQxMn0.UvIAb2AyWumohMcxCqnXKFAmw559D23jzjVyjyPB1_4
+        refresh_token:
+          type: string
+          example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNjVjNGQzNzVmNmRmODA1Mjg0MzFhMzY5IiwidG9rZW5fdHlwZSI6MSwidmVyaWZ5IjoxLCJpYXQiOjE3MDg4Mzg2MTIsImV4cCI6MTcxNzQ3ODYxMn0.FMRTl04z4OegPxyZ1wWO_Py-4Cyz06OxZ1nY_Xr2yGs
+    InvalidInput:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Validation error
+        email:
+          type: object
+          properties:
+            type:
+              type: string
+              example: field
+            value:
+              type: string
+              example: quyen6@gmail.com
+            msg:
+              type: string
+              example: Email or password is incorrect
+            path:
+              type: string
+              example: email
+            location:
+              type: string
+              example: body
+    UserInfo:
+      type: object
+      properties:
+        _id:
+          type: string
+          format: MonggoId
+          example: 65c4d375f6df80528431a369
+        name:
+          type: string
+          example: quyen
+        email:
+          type: string
+          example: quyen6@gmail.com
+        date_of_birth:
+          type: string
+          format: ISO8601
+          example: 2023-12-31T11:01:31.323Z
+        created_at:
+          type: string
+          format: ISO8601
+          example: 2024-02-08T13:13:25.523Z
+        updated_at:
+          type: string
+          format: ISO8601
+          example: 2024-02-08T14:53:54.709Z
+        verify:
+          $ref: '#/components/schemas/UserVerifyStatus'
+        twitter_circle:
+          type: array
+          items:
+            type: string
+            format: MonggoId
+            example: 65b4e0f4513e0e1c8b34da1a
+        bio:
+          type: string
+          example: This is my bio
+        location:
+          type: string
+          example: VietNam
+        website:
+          type: string
+          example: www.example.com
+        username:
+          type: string
+          example: user65c4d375f6df80528431a369
+        avatar:
+          type: string
+          example: http://image.jpg
+        cover_photo:
+          type: string
+          example: http://image.jpg
+    UserVerifyStatus:
+      type: number
+      example: 1
+      description: User Verify Status
+      enum: [Unverified, Verified, Banned]
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
