@@ -89,6 +89,7 @@ io.use(async (socket, next) => {
     }
     // pass decode_authorization for socket to use other middlewares
     socket.handshake.auth.decode_authorization = decoded_authorization
+    socket.handshake.auth.access_token = access_token
     next()
   } catch (error) {
     // verify authorization not found
@@ -107,6 +108,23 @@ io.on('connection', (socket) => {
     socket_id: socket.id
   }
   console.log(users)
+  //middleware socket check each sends message time
+  socket.use(async (_, next) => {
+    const { access_token } = socket.handshake.auth
+    try {
+      await verifyAccessToken(access_token)
+      next()
+    } catch (error) {
+      next(new Error('Unauthorized'))
+    }
+  })
+
+  socket.on('error', (err) => {
+    if (err.message === 'Unauthorized') {
+      socket.disconnect()
+    }
+  })
+
   socket.on('send_message', async ({ payload }) => {
     const { content, sender_id, receiver_id } = payload
     const receiver_socket_id = users[receiver_id]?.socket_id
