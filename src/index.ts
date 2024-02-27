@@ -4,10 +4,9 @@ import databaseService from './services/database.services'
 import { defaultErrorHandler } from './middlewares/error.middlewares'
 import mediaRouter from './routes/medias.routes'
 import { initFolder } from './utils/file'
-import { config } from 'dotenv'
 import { UPLOAD_VIDEO_DIR } from './constants/dir'
 import staticRouter from './routes/static.routes'
-import cors from 'cors'
+import cors, { CorsOptions } from 'cors'
 import tweetsRouter from './routes/tweets.routes'
 import bookmarksRouter from './routes/bookmarks.routes'
 import likeRoutes from './routes/likes.routes'
@@ -18,6 +17,8 @@ import { createServer } from 'http'
 import initSocket from './utils/socket'
 import swaggerUi from 'swagger-ui-express'
 import swaggerJsdoc from 'swagger-jsdoc'
+import { envConfig, isProduction } from './constants/config'
+import helmet from 'helmet'
 // import './utils/fake'
 
 // c1: write swagger with comment in js file
@@ -51,8 +52,6 @@ const options: swaggerJsdoc.Options = {
 
 const openapiSpecification = swaggerJsdoc(options)
 
-config()
-
 databaseService.connect().then(() => {
   databaseService.indexUsers()
   databaseService.indexRefreshTokens()
@@ -64,9 +63,13 @@ const app = express()
 // create server for socket
 const httpServer = createServer(app)
 initSocket(httpServer)
-
-app.use(cors())
-const port = process.env.PORT || 4000
+// Helmet helps secure Express apps
+app.use(helmet())
+const corsOptions = {
+  origin: isProduction ? envConfig.clientUrl : '*'
+}
+app.use(cors(corsOptions))
+const port = envConfig.port
 
 // create swagger for project
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(openapiSpecification))
