@@ -19,6 +19,7 @@ import swaggerUi from 'swagger-ui-express'
 import swaggerJsdoc from 'swagger-jsdoc'
 import { envConfig, isProduction } from './constants/config'
 import helmet from 'helmet'
+import { rateLimit } from 'express-rate-limit'
 // import './utils/fake'
 
 // c1: write swagger with comment in js file
@@ -59,6 +60,18 @@ databaseService.connect().then(() => {
   databaseService.indexTweets()
 })
 const app = express()
+
+//limit request and rate limit
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  limit: 100, // Limit each IP to 100 requests per `window` (here, per 15 minutes).
+  standardHeaders: 'draft-7', // draft-6: `RateLimit-*` headers; draft-7: combined `RateLimit` header
+  legacyHeaders: false // Disable the `X-RateLimit-*` headers.
+  // store: ... , // Use an external store for consistency across multiple server instances.
+})
+
+// Apply the rate limiting middleware to all requests.
+app.use(limiter)
 
 // create server for socket
 const httpServer = createServer(app)
