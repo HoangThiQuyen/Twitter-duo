@@ -13,6 +13,7 @@ COPY ./src ./src
 COPY ./swagger ./swagger
 
 #  cài những package vào trong hệ điều hành alpine
+RUN apk add --no-cache ffmpeg
 RUN apk add python3
 RUN npm install pm2 -g
 RUN npm install

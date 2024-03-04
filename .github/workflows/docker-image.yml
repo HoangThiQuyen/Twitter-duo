@@ -26,3 +26,22 @@ jobs:
         run: docker login -u ${{ secrets.DOCKER_HUB_USERNAME }} -p ${{ secrets.DOCKER_HUB_PASSWORD }}
       - name: Push the Docker image
         run: docker push hoangquyen99/twitter:v4
+  # login vào vps bằng account và pull docker mới nhất cho vps
+  deploy:
+    runs-on: ubuntu-latest
+    # chạy sau khi build ở trên chạy xong
+    needs: build
+    steps:
+      - name: Executing remote ssh commands using password
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.HOST_IP_ADDRESS }}
+          username: ${{ secrets.HOST_USERNAME }}
+          password: ${{ secrets.HOST_PASSWORD }}
+          port: ${{ secrets.PORT }}
+          script: |
+            docker login -u ${{secrets.DOCKER_HUB_USERNAME}} -p ${{secrets.DOCKER_HUB_PASSWORD}}
+            docker pull hoangquyen99/twitter:v4
+            docker stop twitter-container
+            docker rm twitter-container
+            docker run -dp 3000:4000 --name twitter-container -v ~/Twitter-duo/uploads:/app/uploads hoangquyen99/twitter:v4
